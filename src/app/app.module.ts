@@ -1,16 +1,35 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, Injector } from '@angular/core';
 
-import { AppComponent } from './app.component';
+import { ElementZoneStrategyFactory } from 'elements-zone-strategy';
+import { createCustomElement } from '@angular/elements';
+import { ListProductsComponent } from './list-products/list-products.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
-    AppComponent
+    ListProductsComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    NgbModule.forRoot(),
+    HttpClientModule
+  ],
+  entryComponents: [
+
+    ListProductsComponent
+
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: []
 })
-export class AppModule { }
+export class AppModule {
+  constructor(private injector: Injector) { }
+  ngDoBootstrap() {
+    const strategyFactory = new ElementZoneStrategyFactory(ListProductsComponent, this.injector);
+    const el = createCustomElement(ListProductsComponent, { injector: this.injector, strategyFactory });
+
+    customElements.define('list-products', el);
+  }
+}
